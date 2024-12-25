@@ -5,9 +5,7 @@ CONFIG -= qt
 
 SOURCES += \
         main.cpp \
-        sortingcontainer.cpp
+        sort.cpp
 
 HEADERS += \
-    mamtsortingcontainer.h \
-    multithreadsortingcontainer.h \
-    sortingcontainer.h
+    sort.h

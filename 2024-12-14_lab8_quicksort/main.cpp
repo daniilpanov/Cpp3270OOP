@@ -1,11 +1,11 @@
 #include <iostream>
 #include <chrono>
-#include "mamtsortingcontainer.h"
-#include "multithreadsortingcontainer.h"
+#include <functional>
+#include "sort.h"
 
 using namespace std::chrono;
 
-milliseconds functionTime(void (*func)())
+milliseconds functionTime(std::function<void()> func)
 {
     auto begin{steady_clock::now()};
     func();
@@ -16,29 +16,16 @@ milliseconds functionTime(void (*func)())
 
 int main()
 {
-    milliseconds result{functionTime(([]()->void {
-        SortingContainer<int> M(100000);
-        M.randomFill();
-        M.print();
-        M.quickSort();
-        M.print();
+    unsigned int n{10000000};
+    int * arr = new int[n];
+    randomFill(n, arr);
+    milliseconds result{functionTime(([n, arr]()->void {
+        quickSort(arr, 0, n);
     }))};
     std::cout << "Time elapsed without threads: " << result.count() << " ms" << std::endl;
-    result = functionTime(([]()->void {
-        MultiThreadSortingContainer<int> M(1000000);
-        M.randomFill();
-        M.print();
-        M.quickSort();
-        M.print();
+    result = functionTime(([n, arr]()->void {
+        quickSortParallel(arr, 0, n);
     }));
     std::cout << "Time elapsed within threads: " << result.count() << " ms" << std::endl;
-    result = functionTime(([]()->void {
-        MAMTSortingContainer<int> M(10000000);
-        M.randomFill();
-        M.print();
-        M.quickSort();
-        M.print();
-    }));
-    std::cout << "Time elapsed within threads and splitting an array: " << result.count() << " ms" << std::endl;
     return 0;
 }
