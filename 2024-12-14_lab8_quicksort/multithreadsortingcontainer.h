@@ -12,7 +12,7 @@ class MultiThreadSortingContainer : public SortingContainer<T>
 protected:
     std::mutex arrayMtx;
 
-    virtual void _quickSortPart(unsigned int start, unsigned int finish, unsigned int hasThreads = std::floor(std::log2(std::thread::hardware_concurrency())))
+    virtual void _quickSort(unsigned int start, unsigned int finish, unsigned int hasThreads)
     {
         // One element array
         if (finish - start <= 1) return;
@@ -37,22 +37,22 @@ protected:
         {
             if (hasThreads)
             {
-                threads[0] = std::thread(&MultiThreadSortingContainer::_quickSortPart, this, start, j + 1, hasThreads - 1);
+                threads[0] = std::thread(&MultiThreadSortingContainer::_quickSort, this, start, j + 1, hasThreads - 1);
             }
             else
             {
-                _quickSortPart(start, j + 1, 0);
+                _quickSort(start, j + 1, 0);
             }
         }
         if (i < finish)
         {
             if (hasThreads)
             {
-                threads[1] = std::thread(&MultiThreadSortingContainer::_quickSortPart, this, i, finish, hasThreads - 1);
+                threads[1] = std::thread(&MultiThreadSortingContainer::_quickSort, this, i, finish, hasThreads - 1);
             }
             else
             {
-                _quickSortPart(i, finish, 0);
+                _quickSort(i, finish, 0);
             }
         }
         for (unsigned int i{0}; i < 2; ++i)
@@ -65,13 +65,13 @@ protected:
         delete[] threads;
     }
 
-    virtual void _quickSort(unsigned int start, unsigned int finish) override
-    {
-        _quickSortPart(start, finish);
-    }
-
 public:
     MultiThreadSortingContainer(unsigned int size): SortingContainer<T>(size) {};
+
+    virtual void quickSort() override
+    {
+        _quickSort(0, this->n, std::floor(std::log2(std::thread::hardware_concurrency())));
+    }
 };
 
 #endif // MULTITHREADSORTINGCONTAINER_H

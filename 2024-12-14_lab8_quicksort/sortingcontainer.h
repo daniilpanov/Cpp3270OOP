@@ -1,8 +1,7 @@
 #ifndef SORTINGCONTAINER_H
 #define SORTINGCONTAINER_H
 
-#include <cstdlib>
-// #include <iostream>
+#include <cmath>
 
 template<class T>
 class SortingContainer
@@ -13,17 +12,17 @@ protected:
 
     virtual void _quickSort(unsigned int start, unsigned int finish)
     {
+        // One element array
+        if (finish <= 1) return;
+
         unsigned int i{start};
         unsigned int j{finish - 1};
         T midVal = arr[(j + i) / 2];
         do {
-
             while (arr[i] < midVal) ++i;
             while (arr[j] > midVal) --j;
             if (i <= j) {
-                T tmp{arr[i]};
-                arr[i] = arr[j];
-                arr[j] = tmp;
+                std::swap(this->arr[i], this->arr[j]);
                 ++i;
                 --j;
             }
@@ -43,7 +42,7 @@ public:
         }
     }
 
-    void quickSort()
+    virtual void quickSort()
     {
         _quickSort(0, n);
     }
